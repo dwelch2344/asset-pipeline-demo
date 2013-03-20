@@ -1,0 +1,1 @@
+window.console.log("Hello 12:17 from app1");
