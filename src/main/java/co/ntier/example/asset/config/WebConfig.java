@@ -1,5 +1,9 @@
 package co.ntier.example.asset.config;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -14,19 +18,23 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import co.ntier.web.pipeline.core.ResourceCompiler;
+import co.ntier.web.pipeline.core.PipelineConstants;
 import co.ntier.web.pipeline.impl.closure.ClosureResourceCompiler;
 
 @Configuration
 @EnableWebMvc
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 public class WebConfig extends WebMvcConfigurerAdapter {
-
-	@Bean
-	public ResourceCompiler rc(){
-		return new ClosureResourceCompiler();
-	}
 	
+	@Inject ServletContext ctx;
+	
+	@PostConstruct
+	public void onSetup(){
+		// comment the next line out to prevent minification
+		ctx.setAttribute(PipelineConstants.IS_PRODUCTION_KEY, true);
+		ctx.setAttribute(PipelineConstants.RESOURCE_COMPILER_KEY, new ClosureResourceCompiler());
+	}
+
     @Bean
     public ViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
